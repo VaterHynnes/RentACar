@@ -1,0 +1,32 @@
+# --- Gradle ---
+.gradle/
+build/
+!gradle/wrapper/gradle-wrapper.jar
+
+# --- IDEs ---
+# IntelliJ / Android Studio
+.idea/
+*.iml
+out/
+
+# VSCode
+.vscode/
+
+# --- Java / Kotlin ---
+*.class
+*.log
+
+# --- Betriebssystem ---
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Linux
+*~
+
+# --- Sonstiges ---
+# lokale Konfigurationsdateien
+*.swp
+*.tmp
