@@ -312,5 +312,45 @@ class BookingServiceTest {
         assertThat(result).containsExactly(booking1, booking2);
         verify(bookingRepository).findByCustomerId(1L);
     }
+
+    @Test
+    @DisplayName("Sollte Exception werfen wenn Buchung nicht gefunden wird beim Bestätigen")
+    void shouldThrowExceptionWhenBookingNotFoundOnConfirm() {
+        // Given
+        when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThatThrownBy(() -> bookingService.confirmBooking(999L, "testuser", "127.0.0.1"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("nicht gefunden");
+    }
+
+    @Test
+    @DisplayName("Sollte Exception werfen wenn Buchung nicht gefunden wird beim Stornieren")
+    void shouldThrowExceptionWhenBookingNotFoundOnCancel() {
+        // Given
+        when(bookingRepository.findById(999L)).thenReturn(Optional.empty());
+
+        // When/Then
+        assertThatThrownBy(() -> bookingService.cancelBooking(999L, "testuser", "127.0.0.1"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("nicht gefunden");
+    }
+
+    @Test
+    @DisplayName("Sollte leere Liste zurückgeben wenn keine verfügbaren Fahrzeuge gefunden werden")
+    void shouldReturnEmptyListWhenNoAvailableVehicles() {
+        // Given
+        when(vehicleRepository.findAvailableVehicles(
+                VehicleType.MITTELKLASSE, "Berlin", tomorrow, nextWeek))
+                .thenReturn(List.of());
+
+        // When
+        List<Vehicle> result = bookingService.searchAvailableVehicles(
+                VehicleType.MITTELKLASSE, "Berlin", tomorrow, nextWeek);
+
+        // Then
+        assertThat(result).isEmpty();
+    }
 }
 

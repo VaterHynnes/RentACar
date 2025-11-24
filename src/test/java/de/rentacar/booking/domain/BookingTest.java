@@ -143,5 +143,58 @@ class BookingTest {
         // Then
         assertThat(overlaps).isFalse();
     }
+
+    @Test
+    @DisplayName("Sollte Buchung abschließen können")
+    void shouldCompleteBooking() {
+        // Given
+        booking.setStatus(BookingStatus.BESTÄTIGT);
+
+        // When
+        booking.complete();
+
+        // Then
+        assertThat(booking.getStatus()).isEqualTo(BookingStatus.ABGESCHLOSSEN);
+    }
+
+    @Test
+    @DisplayName("Sollte Exception werfen wenn nicht bestätigte Buchung abgeschlossen wird")
+    void shouldThrowExceptionWhenCompletingNonConfirmedBooking() {
+        // Given
+        booking.setStatus(BookingStatus.ANFRAGE);
+
+        // When/Then
+        assertThatThrownBy(() -> booking.complete())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("bestätigte Buchungen");
+    }
+
+    @Test
+    @DisplayName("Sollte false zurückgeben wenn Buchung abgeschlossen ist")
+    void shouldReturnFalseWhenBookingIsCompleted() {
+        // Given
+        booking.setStatus(BookingStatus.ABGESCHLOSSEN);
+
+        // When
+        boolean active = booking.isActive();
+
+        // Then
+        assertThat(active).isFalse();
+    }
+
+    @Test
+    @DisplayName("Sollte false zurückgeben wenn Buchung nicht bestätigt ist für Overlap")
+    void shouldReturnFalseWhenBookingNotConfirmedForOverlap() {
+        // Given
+        booking.setStatus(BookingStatus.ANFRAGE);
+        LocalDate overlapStart = tomorrow.plusDays(2);
+        LocalDate overlapEnd = nextWeek.minusDays(1);
+
+        // When
+        boolean overlaps = booking.overlapsWith(overlapStart, overlapEnd);
+
+        // Then
+        assertThat(overlaps).isFalse();
+    }
 }
 
